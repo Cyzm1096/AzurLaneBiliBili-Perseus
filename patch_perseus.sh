@@ -24,17 +24,17 @@ done
 chmod +x apkeep
 
 # Download Azur Lane
-if [ ! -f "com.bilibili.blhx.dl.apk" ]; then
+if [ ! -f "com.bilibili.blhx.baidu.apk" ]; then
     echo "Get Azur Lane apk"
 
     # eg: wget "your download link" -O "your packge name.apk" -q
     #if you want to patch .xapk, change the suffix here to wget "your download link" -O "your packge name.xapk" -q
-    wget http://cy.cyzm.top:32773/d/123Pan/%E5%8E%9F%E7%89%88%E5%8C%85%E5%90%8D/com.bilibili.blhx.dl.apk?sign=BZsqrjUWNC-JjW_Dc1iFREbffyGRm3F8jfD2oISUxWs=:0 -O com.bilibili.blhx.dl.apk -q
+    wget http://cy.cyzm.top:32773/d/123Pan/com.bilibili.blhx.baidu.apk?sign=tSBNLHDrpaDxvtQoUXI6N2orOnpDN4nCEvQNEkpLp3E=:0 -O com.bilibili.blhx.baidu.apk -q
     echo "apk downloaded !"
     
     # if you can only download .xapk file uncomment 2 lines below. (delete the '#')
-    #unzip -o com.bilibili.blhx.dl.xapk -d AzurLane
-    #cp AzurLane/com.bilibili.blhx.dl.apk .
+    #unzip -o com.bilibili.blhx.baidu.xapk -d AzurLane
+    #cp AzurLane/com.bilibili.blhx.baidu.apk .
 fi
 
 # Download Perseus
@@ -44,19 +44,19 @@ if [ ! -d "Perseus" ]; then
 fi
 
 echo "Decompile Azur Lane apk"
-java -jar apktool.jar -q -f d com.bilibili.blhx.dl.apk
+java -jar apktool.jar -q -f d com.bilibili.blhx.baidu.apk
 
 echo "Copy Perseus libs"
-cp -r Perseus/. com.bilibili.blhx.dl/lib/
+cp -r Perseus/. com.bilibili.blhx.baidu/lib/
 
 echo "Patching Azur Lane with Perseus"
-oncreate=$(grep -n -m 1 'onCreate' com.bilibili.blhx.dl/smali/com/unity3d/player/UnityPlayerActivity.smali | sed  's/[0-9]*\:\(.*\)/\1/')
-sed -ir "s#\($oncreate\)#.method private static native init(Landroid/content/Context;)V\n.end method\n\n\1#" com.bilibili.blhx.dl/smali/com/unity3d/player/UnityPlayerActivity.smali
-sed -ir "s#\($oncreate\)#\1\n    const-string v0, \"Perseus\"\n\n\    invoke-static {v0}, Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V\n\n    invoke-static {p0}, Lcom/unity3d/player/UnityPlayerActivity;->init(Landroid/content/Context;)V\n#" com.bilibili.blhx.dl/smali/com/unity3d/player/UnityPlayerActivity.smali
+oncreate=$(grep -n -m 1 'onCreate' com.bilibili.blhx.baidu/smali/com/unity3d/player/UnityPlayerActivity.smali | sed  's/[0-9]*\:\(.*\)/\1/')
+sed -ir "s#\($oncreate\)#.method private static native init(Landroid/content/Context;)V\n.end method\n\n\1#" com.bilibili.blhx.baidu/smali/com/unity3d/player/UnityPlayerActivity.smali
+sed -ir "s#\($oncreate\)#\1\n    const-string v0, \"Perseus\"\n\n\    invoke-static {v0}, Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V\n\n    invoke-static {p0}, Lcom/unity3d/player/UnityPlayerActivity;->init(Landroid/content/Context;)V\n#" com.bilibili.blhx.baidu/smali/com/unity3d/player/UnityPlayerActivity.smali
 
 echo "Build Patched Azur Lane apk"
-java -jar apktool.jar -q -f b com.bilibili.blhx.dl -o build/com.bilibili.blhx.dl.patched.apk
+java -jar apktool.jar -q -f b com.bilibili.blhx.baidu -o build/com.bilibili.blhx.baidu.patched.apk
 
 echo "Set Github Release version"
-s=($(./apkeep -a com.bilibili.blhx.dl -l))
+s=($(./apkeep -a com.bilibili.blhx.baidu -l))
 echo "PERSEUS_VERSION=$(echo ${s[-1]})" >> $GITHUB_ENV
